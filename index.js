@@ -1,53 +1,54 @@
-// Función constructora
-function CursoFunc(nombre, precio, categoria, duracion, id) {
-  this.nombre = nombre;
-  this.precio = precio;
-  this.categoria = categoria;
-  this.duracion = duracion;
-  this.id = id;
-}
+console.log(electrodomesticos);
 
-// Clase constructora
-class Curso {
-  constructor(nombre, precio, categoria, duracion, id) {
-    this.nombre = nombre;
-    this.precio = precio;
-    this.categoria = categoria;
-    this.duracion = duracion;
-    this.id = id;
-  }
-}
+const containerCards = document.querySelector(".container-cards");
 
-// Crear array
-const cursos = [];
+const cardsAHtml = array => {
+  const cards = array.reduce((acc, element) => {
+    return acc + `
+    <div class="card" id="card-${element.id}">
+        <button class="button-card" id="button-${element.id}">
+        <i class="fa-solid fa-cart-shopping"></i>
+        </button>       
+        <h2>
+            ${element.name}
+        </h2>
+        <figure class="container-card">
+            <img src="${element.img || "not-found.jpg"}" alt="imagen del electrodomestico ${element.name}">
+        </figure>
+        <h4>
+            Type: ${element.type.join(" - ")}
+        </h4>
+        <h4>
+            Precio: ${element.precio}
+        </h4>
+    </div>`;
+  }, "");
 
-cursos.push(new Curso('Auditoría Avanzada', 150, 'Auditoría Financiera', '4 semanas', 1));
-cursos.push(new Curso('Gestión de Inversiones', 200, 'Finanzas', '6 semanas', 2));
-cursos.push(new Curso('Contabilidad Corporativa', 120, 'Auditoría Financiera', '5 semanas', 3));
-cursos.push(new Curso('Finanzas Personales', 100, 'Finanzas', '3 semanas', 4));
-cursos.push(new Curso('Auditoría Interna', 180, 'Auditoría Financiera', '4 semanas', 5));
-
-// Método
-cursos.ordenarPorNombre = function () {
-  this.sort((a, b) => a.nombre.localeCompare(b.nombre));
+  containerCards.innerHTML = cards;
 };
 
-cursos.ordenarPorNombre();
+cardsAHtml(electrodomesticos);
 
-// Pedirle al usuario qué curso desea comprar
-const cursoDeseado = prompt('¿Qué curso deseas comprar?');
+const allCards = document.querySelectorAll(".button-card");
 
-// Buscar 
-const cursoEncontrado = cursos.find(curso => curso.nombre.toLowerCase() === cursoDeseado.toLowerCase());
+let electrodomesticosCarrito = [];
 
-if (cursoEncontrado) {
-  const confirmacion = confirm(`Estás seguro de adquirir el curso ${cursoEncontrado.nombre} por ${cursoEncontrado.precio} dólares?`);
-
-  if (confirmacion) {
-    alert(`Gracias por tu compra del curso ${cursoEncontrado.nombre} por ${cursoEncontrado.precio} dólares. Disfrutá el aprendizaje`);
-  } else {
-    alert('Compra cancelada. ¡Esperamos verte de nuevo pronto!');
+const eventoCards = (nodos, array) => {
+  for (let i = 0; i < nodos.length; i++) {
+    nodos[i].onclick = (e) => {
+      const id = e.currentTarget.id.slice(7);
+      const buscarElectrodomestico = array.find(element => element.id === Number(id));
+      electrodomesticosCarrito.push(buscarElectrodomestico);
+      localStorage.setItem("electrodomesticos", JSON.stringify(electrodomesticosCarrito));
+      Toastify({
+        text: `Se ha añadido a ${buscarElectrodomestico.name} al carrito.`,
+        className: "info",
+        style: {
+          background: "linear-gradient(to right, #00b09b, #96c93d)",
+        },
+      }).showToast();
+    };
   }
-} else {
-  alert('Curso no encontrado.');
-}
+};
+
+eventoCards(allCards, electrodomesticos);
